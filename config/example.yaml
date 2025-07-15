@@ -1,0 +1,49 @@
+server:
+  mode: "example"
+  port: 8080
+  socketPort: 8081
+
+cors:
+  url: "http://localhost:nnnn"
+
+mysql:
+  host: "localhost"
+  port: 3306
+  username: "xxxxx"
+  password: "xxxxx"
+  dbname: "xxxxx"
+  maxIdleConns: 3
+  maxOpenConns: 5
+  connMaxLifeTime: 10
+
+redis:
+  host: "localhost"
+  port: 6379
+  password: ""
+  database: 0
+
+log:
+  logLevel: "debug"
+  fileLogName: "./storage/logs/server.log"
+  maxSize:    500
+  maxBackups: 3
+  maxAge:     7
+  compress:   true
+
+jwt:
+  accessSecret: "xxx"
+  accessSecretExpiriedTime: 3600
+  refreshSecret: "xxx"
+  refreshSecretExpiriedTime: 86400
+
+cloudinary:
+  cloud_name: "xxx"
+  api_key: "xxx"
+  api_secret: "xxx"
+
+admin:
+  email: "xxx"
+  username: "xxx"
+  phoneNumber: "xxx"
+  password: "xxx"
+

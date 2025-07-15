@@ -1,0 +1,81 @@
+# version: '3.8'
+
+# services:
+#   mysql:
+#     image: mysql:8.0
+#     container_name: mysql-container
+#     restart: always
+#     environment:
+#       - MYSQL_ROOT_PASSWORD=shopdev
+#       - MYSQL_DATABASE=chatapp
+#       - MYSQL_PASSWORD=shopdev
+#     ports:
+#       - '3301:3306'
+#     networks:
+#       - app-network
+
+#   redis:
+#     image: redis:7.2
+#     container_name: redis-container
+#     ports:
+#       - '6301:6379'
+#     networks:
+#       - app-network
+
+#   backend:
+#     container_name: chatapp-backend-go
+#     build:
+#       context: .
+#       dockerfile: Dockerfile
+#     restart: always
+#     depends_on:
+#       - mysql
+#       - redis
+#     ports:
+#       - '4444:8082'
+#     networks:
+#       - app-network
+
+# networks:
+#   app-network:
+#     driver: bridge
+
+version: "3.8"
+
+services:
+  mysql:
+    image: mysql:8.0
+    container_name: mysql-container-go
+    restart: always
+    environment:
+      - MYSQL_ROOT_PASSWORD=shopdev
+      - MYSQL_DATABASE=shop
+      - MYSQL_PASSWORD=shopdev
+    ports:
+      - "3301:3306"
+    volumes:
+      - mysql-data:/var/lib/mysql
+
+  redis:
+    image: redis:8.0
+    container_name: redis-container-go
+    ports:
+      - "6301:6379"
+    volumes:
+      - redis-data:/data
+
+  backend:
+    container_name: chatapp-backend-go
+    build:
+      context: .
+      dockerfile: Dockerfile
+    restart: always
+    depends_on:
+      - mysql
+      - redis
+    ports:
+      - "4444:8082"
+
+volumes:
+  mysql-data:
+  redis-data:
