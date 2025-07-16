@@ -11,6 +11,7 @@ import (
 	"go-ecommerce-backend-api/internal/utils"
 	"go-ecommerce-backend-api/pkg/response"
 	"strconv"
+	"strings"
 	"time"
 
 	"github.com/redis/go-redis/v9"
@@ -27,11 +28,12 @@ func (s *sUserLogin) Login(ctx context.Context) error {
 
 // Register implements service.IUserLogin.
 func (s *sUserLogin) Register(ctx context.Context, in *dto.RegisterInput) (codeResult int, err error) {
-	// 1. Hash email
-	fmt.Printf("VerifyKey: %s | VerifyType: %s | VerifyPurpose: %s\n", in.VerifyKey, in.VerifyType, in.VerifyPurpose)
-	hashKey := utils.GetHash(in.VerifyKey)
-	rs, err := s.r.CheckUserBaseExists(ctx, in.VerifyKey)
 
+	// 1. Hash email
+	fmt.Printf("VerifyKey: %s | VerifyType: %d | VerifyPurpose: %s\n", in.VerifyKey, in.VerifyType, in.VerifyPurpose)
+	hashKey := utils.GetHash(in.VerifyKey)
+
+	rs, err := s.r.CheckUserBaseExists(ctx, in.VerifyKey)
 	// 2. Check user exists in user base
 	if err != nil {
 		return response.ErrorExistData, err
@@ -52,7 +54,7 @@ func (s *sUserLogin) Register(ctx context.Context, in *dto.RegisterInput) (codeR
 		fmt.Println("Error getting OTP from redis:", err)
 		return response.ErrorInValidOTP, err
 	case otpFound != "":
-		return response.ErrorOTPNotExists, fmt.Errorf("")
+		return response.ErrorOTPNotExists, fmt.Errorf("OTP already exists for this email")
 	}
 
 	otpNew := utils.GenerateSixDigitNumber()
@@ -92,9 +94,9 @@ func (s *sUserLogin) Register(ctx context.Context, in *dto.RegisterInput) (codeR
 			return response.ErrorSendEmailOTPCode, err
 		}
 		fmt.Println("lastIdVerifyUser: ", lastIdVerifyUser)
-		return response.ErrorSendEmailOTPCode, nil
+		return response.SuccessSendEmailOTPCode, nil
 	case consts.MOBILE:
-	return response.ErrorSuccessCode, nil
+		return response.ErrorSuccessCode, nil
 	}
 	return response.ErrorSuccessCode, nil
 }
@@ -106,7 +108,7 @@ func (s *sUserLogin) UpdatePasswordRegister(ctx context.Context) error {
 
 // VerifyOTP implements service.IUserLogin.
 func (s *sUserLogin) VerifyOTP(ctx context.Context) error {
-	panic("unimplemented")
+	hashKey := utils.GetHash(strings.ToLower())
 }
 
 func NewUserLogin(r *database.Queries) *sUserLogin {

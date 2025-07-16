@@ -1,0 +1,72 @@
+basePath: /api/v1
+definitions:
+  dto.RegisterInput:
+    properties:
+      verifyKey:
+        type: string
+      verifyPurpose:
+        type: string
+      verifyType:
+        type: integer
+    required:
+    - verifyKey
+    - verifyPurpose
+    - verifyType
+    type: object
+  response.ErrorResponseData:
+    properties:
+      code:
+        type: integer
+      detail: {}
+      err:
+        type: string
+    type: object
+  response.ResponseData:
+    properties:
+      code:
+        type: integer
+      data: {}
+      message:
+        type: string
+    type: object
+host: localhost:8001
+info:
+  contact:
+    email: nguyenphamhoangvu852004@gmail.com
+    name: Team Vu
+    url: github.com/nguyenphamhoangvu852004/go-ecommerce-backend
+  description: This is a sample server celler server.
+  license:
+    name: Apache 2.0
+    url: http://www.apache.org/licenses/LICENSE-2.0.html
+  termsOfService: github.com/nguyenphamhoangvu852004/go-ecommerce-backend
+  title: API Documentation Go Ecommerce Backend SHOPDEVGO
+  version: "1.0"
+paths:
+  /auth/register:
+    post:
+      consumes:
+      - application/json
+      description: when user register, sent otp to email
+      parameters:
+      - description: payload
+        in: body
+        name: payload
+        required: true
+        schema:
+          $ref: '#/definitions/dto.RegisterInput'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.ResponseData'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/response.ErrorResponseData'
+      summary: User Register
+      tags:
+      - account management
+swagger: "2.0"

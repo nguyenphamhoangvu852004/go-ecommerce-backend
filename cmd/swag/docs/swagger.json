@@ -1,0 +1,107 @@
+{
+    "swagger": "2.0",
+    "info": {
+        "description": "This is a sample server celler server.",
+        "title": "API Documentation Go Ecommerce Backend SHOPDEVGO",
+        "termsOfService": "github.com/nguyenphamhoangvu852004/go-ecommerce-backend",
+        "contact": {
+            "name": "Team Vu",
+            "url": "github.com/nguyenphamhoangvu852004/go-ecommerce-backend",
+            "email": "nguyenphamhoangvu852004@gmail.com"
+        },
+        "license": {
+            "name": "Apache 2.0",
+            "url": "http://www.apache.org/licenses/LICENSE-2.0.html"
+        },
+        "version": "1.0"
+    },
+    "host": "localhost:8001",
+    "basePath": "/api/v1",
+    "paths": {
+        "/auth/register": {
+            "post": {
+                "description": "when user register, sent otp to email",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "account management"
+                ],
+                "summary": "User Register",
+                "parameters": [
+                    {
+                        "description": "payload",
+                        "name": "payload",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/dto.RegisterInput"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/response.ResponseData"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/response.ErrorResponseData"
+                        }
+                    }
+                }
+            }
+        }
+    },
+    "definitions": {
+        "dto.RegisterInput": {
+            "type": "object",
+            "required": [
+                "verifyKey",
+                "verifyPurpose",
+                "verifyType"
+            ],
+            "properties": {
+                "verifyKey": {
+                    "type": "string"
+                },
+                "verifyPurpose": {
+                    "type": "string"
+                },
+                "verifyType": {
+                    "type": "integer"
+                }
+            }
+        },
+        "response.ErrorResponseData": {
+            "type": "object",
+            "properties": {
+                "code": {
+                    "type": "integer"
+                },
+                "detail": {},
+                "err": {
+                    "type": "string"
+                }
+            }
+        },
+        "response.ResponseData": {
+            "type": "object",
+            "properties": {
+                "code": {
+                    "type": "integer"
+                },
+                "data": {},
+                "message": {
+                    "type": "string"
+                }
+            }
+        }
+    }
+}
