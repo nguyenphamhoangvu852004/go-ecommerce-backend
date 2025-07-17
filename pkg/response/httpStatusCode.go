@@ -8,6 +8,7 @@ const (
 	ExistsCode              = 2004
 	RegisterSuccessCode     = 2005
 	SuccessSendEmailOTPCode = 2006
+	VerifyOTPSuccess        = 2007
 )
 
 const (
@@ -22,6 +23,7 @@ const (
 	ErrorSendEmailOTPCode     = 3008
 	ErrorExistData            = 3009
 	ErrorOTPNotExists         = 3010
+	ErrorOTPNotMatch          = 3011
 )
 
 var msgSuccessMap = map[int]string{
@@ -32,6 +34,7 @@ var msgSuccessMap = map[int]string{
 	ExistsCode:              "Data already exists",
 	RegisterSuccessCode:     "Register success",
 	SuccessSendEmailOTPCode: "Success send email OTP",
+	VerifyOTPSuccess:        "Verify Otp Success ",
 }
 
 var msgErrorMap = map[int]string{
@@ -46,4 +49,5 @@ var msgErrorMap = map[int]string{
 	ErrorSendEmailOTPCode:     "Error sending email OTP",
 	ErrorExistData:            "Data already exists",
 	ErrorOTPNotExists:         "OTP not exists",
+	ErrorOTPNotMatch:          "OTP not match",
 }

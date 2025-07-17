@@ -63,6 +63,46 @@ const docTemplate = `{
                     }
                 }
             }
+        },
+        "/auth/verify_account": {
+            "post": {
+                "description": "Verify OTP Login by User",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "account management"
+                ],
+                "summary": "Verify OTP Login by User",
+                "parameters": [
+                    {
+                        "description": "payload",
+                        "name": "payload",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/dto.VerifyInput"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/response.ResponseData"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/response.ErrorResponseData"
+                        }
+                    }
+                }
+            }
         }
     },
     "definitions": {
@@ -82,6 +122,21 @@ const docTemplate = `{
                 },
                 "verifyType": {
                     "type": "integer"
+                }
+            }
+        },
+        "dto.VerifyInput": {
+            "type": "object",
+            "required": [
+                "verifyCode",
+                "verifyKey"
+            ],
+            "properties": {
+                "verifyCode": {
+                    "type": "string"
+                },
+                "verifyKey": {
+                    "type": "string"
                 }
             }
         },

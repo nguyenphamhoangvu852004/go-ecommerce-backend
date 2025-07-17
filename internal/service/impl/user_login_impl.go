@@ -101,14 +101,40 @@ func (s *sUserLogin) Register(ctx context.Context, in *dto.RegisterInput) (codeR
 	return response.ErrorSuccessCode, nil
 }
 
-// UpdatePasswordRegister implements service.IUserLogin.
-func (s *sUserLogin) UpdatePasswordRegister(ctx context.Context) error {
-	panic("unimplemented")
+// VerifyOTP implements service.IUserLogin.
+func (s *sUserLogin) VerifyOTP(ctx context.Context, in *dto.VerifyInput) (out dto.VerifyOutput, err error) {
+	hashKey := utils.GetHash(strings.ToLower(in.VerifyKey))
+
+	otpFound, err := global.Rdb.Get(ctx, utils.GetUserKey(hashKey)).Result()
+	if err != nil {
+		return out, err
+	}
+
+	if in.VerifyCode != otpFound {
+		// Nếu nó sai 5 lần trong 1 phút thì sao???
+
+		return out, fmt.Errorf("OTP not match with the storage otp in system")
+	}
+
+	infoOtp, err := s.r.GetVerifyOTP(ctx, hashKey)
+	if err != nil {
+		return out, err
+	}
+
+	if err := s.r.UpdateVerifyToVerified(ctx, hashKey); err != nil {
+		return out, err
+	}
+
+	//output
+	out.Token = infoOtp.VerifyKeyHash
+	out.Message = "success"
+
+	return out, err
 }
 
-// VerifyOTP implements service.IUserLogin.
-func (s *sUserLogin) VerifyOTP(ctx context.Context) error {
-	hashKey := utils.GetHash(strings.ToLower())
+// UpdatePasswordRegister implements service.IUserLogin.
+func (s *sUserLogin) UpdatePasswordRegister(ctx context.Context, token string, password string) (userId int, err error) {
+
 }
 
 func NewUserLogin(r *database.Queries) *sUserLogin {

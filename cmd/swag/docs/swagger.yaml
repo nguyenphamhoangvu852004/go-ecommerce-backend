@@ -13,6 +13,16 @@ definitions:
     - verifyPurpose
     - verifyType
     type: object
+  dto.VerifyInput:
+    properties:
+      verifyCode:
+        type: string
+      verifyKey:
+        type: string
+    required:
+    - verifyCode
+    - verifyKey
+    type: object
   response.ErrorResponseData:
     properties:
       code:
@@ -67,6 +77,32 @@ paths:
           schema:
             $ref: '#/definitions/response.ErrorResponseData'
       summary: User Register
+      tags:
+      - account management
+  /auth/verify_account:
+    post:
+      consumes:
+      - application/json
+      description: Verify OTP Login by User
+      parameters:
+      - description: payload
+        in: body
+        name: payload
+        required: true
+        schema:
+          $ref: '#/definitions/dto.VerifyInput'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.ResponseData'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/response.ErrorResponseData'
+      summary: Verify OTP Login by User
       tags:
       - account management
 swagger: "2.0"

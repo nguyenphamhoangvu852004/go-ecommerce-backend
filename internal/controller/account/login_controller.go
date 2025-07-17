@@ -14,6 +14,32 @@ var Login = &cUserLogin{}
 
 type cUserLogin struct{}
 
+// Verify OTP Login By User
+// @Summary       Verify OTP Login by User
+// @Description  Verify OTP Login by User
+// @Tags         account management
+// @Accept       json
+// @Produce      json
+// @Param        payload body dto.VerifyInput true "payload"
+// @Success      200  {object}  response.ResponseData
+// @Failure      500  {object}  response.ErrorResponseData
+// @Router      /auth/verify_account [post]
+func (c *cUserLogin) VerifyOTP(ctx *gin.Context) {
+	var paramas dto.VerifyInput
+
+	if err := ctx.ShouldBindJSON(&paramas); err != nil {
+		response.ErrorReponse(ctx, response.ErrorParameterInvalidCode, err.Error())
+		return
+	}
+	result, err := service.UserLogin().VerifyOTP(ctx, &paramas)
+	if err != nil {
+		response.ErrorReponse(ctx, response.ErrorInValidOTP, err.Error())
+		return
+	}
+	response.SuccessReponse(ctx, response.VerifyOTPSuccess, result)
+
+}
+
 func (c *cUserLogin) Login(ctx *gin.Context) {
 	err := service.UserLogin().Login(ctx)
 	if err != nil {
