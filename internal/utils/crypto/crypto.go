@@ -1,9 +1,9 @@
-package utils
+package crypto
 
 import (
+	"crypto/rand"
 	"crypto/sha256"
 	"encoding/hex"
-	"fmt"
 	"strconv"
 
 	"golang.org/x/crypto/bcrypt"
@@ -16,6 +16,13 @@ func GetHash(key string) string {
 
 	return hex.EncodeToString(hashBytes)
 }
+func GenSalt(length int) (string, error) {
+	salt := make([]byte, length)
+	if _, err := rand.Read(salt); err != nil {
+		return "", err
+	}
+	return hex.EncodeToString(salt), nil
+}
 
 func StringToInt(str string) int {
 	i, err := strconv.Atoi(str)
@@ -25,12 +32,11 @@ func StringToInt(str string) int {
 	return i
 }
 
-func HashPassword(password string) (string, error) {
-	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(password), bcrypt.DefaultCost)
-	if err != nil {
-		return "", err 	}
-	fmt.Println(string(hashedPassword))
-	return string(hashedPassword), nil
+func HashPassword(password string, salt string) string {
+	saltedPassword := password + salt
+
+	hashPassword := sha256.Sum256([]byte(saltedPassword))
+	return hex.EncodeToString(hashPassword[:])
 }
 
 func CheckPassword(password, hashed string) bool {

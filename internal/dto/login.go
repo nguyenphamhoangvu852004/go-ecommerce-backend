@@ -15,3 +15,11 @@ type VerifyOutput struct {
 	Token   string `json:"token"`
 	Message string `json:"message"`
 }
+
+type UpdateUserPasswordInput struct {
+	UserToken    string `json:"userToken"`
+	UserPassword string `json:"userPassword"`
+}
+
+type UpdateUserPasswordOutput struct {
+}
