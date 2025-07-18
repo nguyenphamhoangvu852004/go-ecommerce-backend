@@ -64,6 +64,46 @@ const docTemplate = `{
                 }
             }
         },
+        "/auth/update_password_register": {
+            "post": {
+                "description": "UpdatePasswordRegistration",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "account management"
+                ],
+                "summary": "UpdatePasswordRegistration",
+                "parameters": [
+                    {
+                        "description": "payload",
+                        "name": "payload",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/dto.UpdateUserPasswordInput"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/response.ResponseData"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/response.ErrorResponseData"
+                        }
+                    }
+                }
+            }
+        },
         "/auth/verify_account": {
             "post": {
                 "description": "Verify OTP Login by User",
@@ -122,6 +162,17 @@ const docTemplate = `{
                 },
                 "verifyType": {
                     "type": "integer"
+                }
+            }
+        },
+        "dto.UpdateUserPasswordInput": {
+            "type": "object",
+            "properties": {
+                "userPassword": {
+                    "type": "string"
+                },
+                "userToken": {
+                    "type": "string"
                 }
             }
         },

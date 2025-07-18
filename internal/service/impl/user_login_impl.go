@@ -9,6 +9,7 @@ import (
 	"go-ecommerce-backend-api/internal/database"
 	"go-ecommerce-backend-api/internal/dto"
 	"go-ecommerce-backend-api/internal/utils"
+	"go-ecommerce-backend-api/internal/utils/crypto"
 	"go-ecommerce-backend-api/pkg/response"
 	"strconv"
 	"strings"
@@ -31,7 +32,7 @@ func (s *sUserLogin) Register(ctx context.Context, in *dto.RegisterInput) (codeR
 
 	// 1. Hash email
 	fmt.Printf("VerifyKey: %s | VerifyType: %d | VerifyPurpose: %s\n", in.VerifyKey, in.VerifyType, in.VerifyPurpose)
-	hashKey := utils.GetHash(in.VerifyKey)
+	hashKey := crypto.GetHash(in.VerifyKey)
 
 	rs, err := s.r.CheckUserBaseExists(ctx, in.VerifyKey)
 	// 2. Check user exists in user base
@@ -103,7 +104,7 @@ func (s *sUserLogin) Register(ctx context.Context, in *dto.RegisterInput) (codeR
 
 // VerifyOTP implements service.IUserLogin.
 func (s *sUserLogin) VerifyOTP(ctx context.Context, in *dto.VerifyInput) (out dto.VerifyOutput, err error) {
-	hashKey := utils.GetHash(strings.ToLower(in.VerifyKey))
+	hashKey := crypto.GetHash(strings.ToLower(in.VerifyKey))
 
 	otpFound, err := global.Rdb.Get(ctx, utils.GetUserKey(hashKey)).Result()
 	if err != nil {
@@ -134,7 +135,58 @@ func (s *sUserLogin) VerifyOTP(ctx context.Context, in *dto.VerifyInput) (out dt
 
 // UpdatePasswordRegister implements service.IUserLogin.
 func (s *sUserLogin) UpdatePasswordRegister(ctx context.Context, token string, password string) (userId int, err error) {
+	infoOTP, err := s.r.GetVerifyOTP(ctx, token)
+	if err != nil {
+		return response.ErrorOTPNotExists, err
+	}
+	if infoOTP.IsVerified.Int32 == 0 {
+		return response.ErrorOTPNotExists, fmt.Errorf("User OTP not verified")
+	}
+	//update user_base
 
+	userBase := database.AddUserBaseParams{}
+
+	userBase.UserAccount = infoOTP.VerifyKey
+	userSalt, err := crypto.GenSalt(16)
+	if err != nil {
+		return response.ErrorOTPNotExists, err
+	}
+	userBase.UserSalt = userSalt
+	userBase.UserPassword = crypto.HashPassword(password, userSalt)
+
+	//add to table
+	newUserBase, err := s.r.AddUserBase(ctx, userBase)
+	if err != nil {
+		return response.ErrorOTPNotExists, err
+	}
+	user_id, err := newUserBase.LastInsertId()
+	if err != nil {
+		return response.ErrorOTPNotExists, err
+	}
+
+	//add user_id to user_indo table
+
+	newUserInfo, err := s.r.AddUserHaveUserId(ctx, database.AddUserHaveUserIdParams{
+		UserID:               uint64(user_id),
+		UserAccount:          infoOTP.VerifyKey,
+		UserNickname:         sql.NullString{String: infoOTP.VerifyKey, Valid: true},
+		UserAvatar:           sql.NullString{String: "", Valid: true},
+		UserMobile:           sql.NullString{String: "", Valid: true},
+		UserGender:           sql.NullInt16{Int16: 0, Valid: true},
+		UserState:            uint8(1),
+		UserBirthday:         sql.NullTime{Time: time.Time{}, Valid: false},
+		UserEmail:            sql.NullString{String: infoOTP.VerifyKey, Valid: true},
+		UserIsAuthentication: uint8(1),
+	})
+
+	if err != nil {
+		return response.ErrorOTPNotExists, err
+	}
+	user_id, err = newUserInfo.LastInsertId()
+	if err != nil {
+		return response.ErrorOTPNotExists, err
+	}
+	return int(user_id), nil
 }
 
 func NewUserLogin(r *database.Queries) *sUserLogin {

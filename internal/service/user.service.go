@@ -7,6 +7,7 @@ import (
 	"go-ecommerce-backend-api/global"
 	"go-ecommerce-backend-api/internal/repository"
 	"go-ecommerce-backend-api/internal/utils"
+	"go-ecommerce-backend-api/internal/utils/crypto"
 	"go-ecommerce-backend-api/pkg/response"
 	"time"
 
@@ -32,7 +33,7 @@ func (u *userService) Register(email string, purpose string) int {
 	// 	return response.ErrorNotExistCode
 	// }
 	// 2. Hash Email
-	hashedEmail := utils.GetHash(email)
+	hashedEmail := crypto.GetHash(email)
 	fmt.Println("Hashed Email is:", hashedEmail)
 
 	// 3. Create OTP

@@ -14,6 +14,31 @@ var Login = &cUserLogin{}
 
 type cUserLogin struct{}
 
+// UpdatePasswordRegistration
+// @Summary       UpdatePasswordRegistration
+// @Description  UpdatePasswordRegistration
+// @Tags         account management
+// @Accept       json
+// @Produce      json
+// @Param        payload body dto.UpdateUserPasswordInput true "payload"
+// @Success      200  {object}  response.ResponseData
+// @Failure      500  {object}  response.ErrorResponseData
+// @Router      /auth/update_password_register [post]
+func (c *cUserLogin) UpdatePasswordRegistration(ctx *gin.Context) {
+	var paramas dto.UpdateUserPasswordInput
+
+	if err := ctx.ShouldBindJSON(&paramas); err != nil {
+		response.ErrorReponse(ctx, response.ErrorParameterInvalidCode, err.Error())
+		return
+	}
+	result, err := service.UserLogin().UpdatePasswordRegister(ctx, paramas.UserToken, paramas.UserPassword)
+	if err != nil {
+		response.ErrorReponse(ctx, response.ErrorInValidOTP, err.Error())
+		return
+	}
+	response.SuccessReponse(ctx, response.VerifyOTPSuccess, result)
+}
+
 // Verify OTP Login By User
 // @Summary       Verify OTP Login by User
 // @Description  Verify OTP Login by User
@@ -37,7 +62,6 @@ func (c *cUserLogin) VerifyOTP(ctx *gin.Context) {
 		return
 	}
 	response.SuccessReponse(ctx, response.VerifyOTPSuccess, result)
-
 }
 
 func (c *cUserLogin) Login(ctx *gin.Context) {
@@ -67,9 +91,7 @@ func (c *cUserLogin) Register(ctx *gin.Context) {
 	codeStatus, err := service.UserLogin().Register(ctx, &params)
 	if err != nil {
 		global.Logger.Error("Error registration user OTP", zap.Error(err))
-		response.ErrorReponse(ctx, 500, err.Error())
-		return
+		response.ErrorReponse(ctx, codeStatus, err.Error())
 	}
 	response.SuccessReponse(ctx, codeStatus, nil)
-	return
 }
