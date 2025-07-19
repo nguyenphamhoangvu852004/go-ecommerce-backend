@@ -64,12 +64,28 @@ func (c *cUserLogin) VerifyOTP(ctx *gin.Context) {
 	response.SuccessReponse(ctx, response.VerifyOTPSuccess, result)
 }
 
+// User Login
+// @Summary       User Login
+// @Description  User Login
+// @Tags         account management
+// @Accept       json
+// @Produce      json
+// @Param        payload body dto.LoginUserInput true "payload"
+// @Success      200  {object}  response.ResponseData
+// @Failure      500  {object}  response.ErrorResponseData
+// @Router      /auth/login [post]
 func (c *cUserLogin) Login(ctx *gin.Context) {
-	err := service.UserLogin().Login(ctx)
-	if err != nil {
-		response.ErrorReponse(ctx, response.ErrorSendEmailOTPCode, err.Error())
+	var params dto.LoginUserInput
+	if err := ctx.ShouldBindJSON(&params); err != nil {
+		response.ErrorReponse(ctx, response.ErrorParameterInvalidCode, err.Error())
+		return
 	}
-	response.SuccessReponse(ctx, response.ErrorSendEmailOTPCode, "Success")
+	codeRs, dataRS, err := service.UserLogin().Login(ctx, &params)
+	if err != nil {
+		response.ErrorReponse(ctx, codeRs, err.Error())
+		return
+	}
+	response.SuccessReponse(ctx, codeRs, dataRS)
 }
 
 // User Registration documentation

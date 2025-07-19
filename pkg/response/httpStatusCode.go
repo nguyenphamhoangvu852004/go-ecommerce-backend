@@ -24,6 +24,7 @@ const (
 	ErrorExistData            = 3009
 	ErrorOTPNotExists         = 3010
 	ErrorOTPNotMatch          = 3011
+	ErrorAuthFailed           = 3012
 )
 
 var msgSuccessMap = map[int]string{
@@ -50,4 +51,5 @@ var msgErrorMap = map[int]string{
 	ErrorExistData:            "Data already exists",
 	ErrorOTPNotExists:         "OTP not exists",
 	ErrorOTPNotMatch:          "OTP not match",
+	ErrorAuthFailed:           "Authentication Failed",
 }

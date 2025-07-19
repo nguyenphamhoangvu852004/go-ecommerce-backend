@@ -42,3 +42,8 @@ func HashPassword(password string, salt string) string {
 func CheckPassword(password, hashed string) bool {
 	return bcrypt.CompareHashAndPassword([]byte(hashed), []byte(password)) == nil
 }
+
+func MatchPassword(storeHash, password, salt string) bool {
+	hashPassword := HashPassword(password, salt)
+	return storeHash == hashPassword
+}

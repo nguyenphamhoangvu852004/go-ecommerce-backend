@@ -18,6 +18,7 @@ func LoadConfig() {
 		panic(fmt.Errorf("failed to read in YAML file: %w", err))
 	}
 
+	fmt.Printf("Raw config: %#v\n", viper.AllSettings())
 	// fmt.Println("Server Port: ", viper.GetInt("server.port"))
 	// fmt.Println("Database Name: ", viper.GetString("databases.mysql.dbname"))
 

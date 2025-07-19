@@ -1,5 +1,12 @@
 basePath: /api/v1
 definitions:
+  dto.LoginUserInput:
+    properties:
+      userAccount:
+        type: string
+      userPassword:
+        type: string
+    type: object
   dto.RegisterInput:
     properties:
       verifyKey:
@@ -60,6 +67,32 @@ info:
   title: API Documentation Go Ecommerce Backend SHOPDEVGO
   version: "1.0"
 paths:
+  /auth/login:
+    post:
+      consumes:
+      - application/json
+      description: User Login
+      parameters:
+      - description: payload
+        in: body
+        name: payload
+        required: true
+        schema:
+          $ref: '#/definitions/dto.LoginUserInput'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.ResponseData'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/response.ErrorResponseData'
+      summary: User Login
+      tags:
+      - account management
   /auth/register:
     post:
       consumes:
