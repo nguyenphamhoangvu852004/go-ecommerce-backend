@@ -24,6 +24,46 @@ const docTemplate = `{
     "host": "{{.Host}}",
     "basePath": "{{.BasePath}}",
     "paths": {
+        "/auth/login": {
+            "post": {
+                "description": "User Login",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "account management"
+                ],
+                "summary": "User Login",
+                "parameters": [
+                    {
+                        "description": "payload",
+                        "name": "payload",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/dto.LoginUserInput"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/response.ResponseData"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/response.ErrorResponseData"
+                        }
+                    }
+                }
+            }
+        },
         "/auth/register": {
             "post": {
                 "description": "when user register, sent otp to email",
@@ -45,6 +85,53 @@ const docTemplate = `{
                         "required": true,
                         "schema": {
                             "$ref": "#/definitions/dto.RegisterInput"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/response.ResponseData"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/response.ErrorResponseData"
+                        }
+                    }
+                }
+            }
+        },
+        "/auth/two_factor/setup": {
+            "post": {
+                "description": "Setup two factor  authentication",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "account 2fa"
+                ],
+                "summary": "Setup two factor  authentication",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Authorization token",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "description": "payload",
+                        "name": "payload",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/dto.SetupTwoFactorAuthInput"
                         }
                     }
                 ],
@@ -146,6 +233,17 @@ const docTemplate = `{
         }
     },
     "definitions": {
+        "dto.LoginUserInput": {
+            "type": "object",
+            "properties": {
+                "userAccount": {
+                    "type": "string"
+                },
+                "userPassword": {
+                    "type": "string"
+                }
+            }
+        },
         "dto.RegisterInput": {
             "type": "object",
             "required": [
@@ -161,6 +259,20 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "verifyType": {
+                    "type": "integer"
+                }
+            }
+        },
+        "dto.SetupTwoFactorAuthInput": {
+            "type": "object",
+            "properties": {
+                "twoFactorAuthType": {
+                    "type": "string"
+                },
+                "twoFactorEmail": {
+                    "type": "string"
+                },
+                "userId": {
                     "type": "integer"
                 }
             }

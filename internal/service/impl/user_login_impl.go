@@ -3,12 +3,14 @@ package impl
 import (
 	"context"
 	"database/sql"
+	"encoding/json"
 	"fmt"
 	"go-ecommerce-backend-api/global"
 	consts "go-ecommerce-backend-api/internal/const"
 	"go-ecommerce-backend-api/internal/database"
 	"go-ecommerce-backend-api/internal/dto"
 	"go-ecommerce-backend-api/internal/utils"
+	"go-ecommerce-backend-api/internal/utils/auth"
 	"go-ecommerce-backend-api/internal/utils/crypto"
 	"go-ecommerce-backend-api/pkg/response"
 	"strconv"
@@ -22,9 +24,93 @@ type sUserLogin struct {
 	r *database.Queries
 }
 
-// Login implements service.IUserLogin.
-func (s *sUserLogin) Login(ctx context.Context) error {
+// VerifyTwoFactorAuth implements service.IUserLogin.
+func (s *sUserLogin) VerifyTwoFactorAuth(ctx context.Context, in *dto.TwoFactorVerifyInput) (code int, err error) {
 	panic("unimplemented")
+}
+
+// IsTwoFactorEnabled implements service.IUserLogin.
+func (s *sUserLogin) IsTwoFactorEnabled(ctx context.Context, userId int) (code int, rs bool, err error) {
+	panic("unimplemented")
+}
+
+// SetupTwoFactorAuth implements service.IUserLogin.
+func (s *sUserLogin) SetupTwoFactorAuth(ctx context.Context, in *dto.SetupTwoFactorAuthInput) (code int, err error) {
+
+	// 1. kiểm tra xem nó có bật tính năng lên chưa -> rồi thì return luôn
+	isTrue, err := s.r.IsTwoFactorEnabled(ctx, int32(in.UserId))
+	if err != nil {
+		return response.ErrorCodeTwoFactorAuthenSetup, err
+	}
+	if isTrue > 0 {
+		return response.ErrorCodeTwoFactorAuthenSetup, fmt.Errorf("Two factor already enabled")
+	}
+
+	// 2. Enable nó lên
+	error := s.r.EnableTwoFactorTypeEmail(ctx, database.EnableTwoFactorTypeEmailParams{
+		UserID:            int32(in.UserId),
+		TwoFactorAuthType: database.PreGoAccUserTwoFactor9999TwoFactorAuthType(in.TwoFactorAuthType),
+		TwoFactorEmail:    sql.NullString{String: in.TwoFactorEmail, Valid: true},
+	})
+	if error != nil {
+		return response.ErrorCodeTwoFactorAuthenSetup, err
+	}
+
+	// 3. Gữi OTP qua in.TwoFactorEmail
+	keyHash := crypto.GetHash("2fa:" + strconv.Itoa(int(in.UserId)))
+	go global.Rdb.SetEx(ctx, keyHash, in.TwoFactorEmail, time.Duration(consts.TIME_OTP_REGISTER)*time.Minute).Err()
+
+	return response.SetupTwoFactorAuthCodeSuccess, nil
+}
+
+// Login implements service.IUserLogin.
+func (s *sUserLogin) Login(ctx context.Context, in *dto.LoginUserInput) (codeResult int, out dto.LoginUserOutput, err error) {
+	userBase, err := s.r.GetOneUserInfo(ctx, in.UserAccount)
+	if err != nil {
+		return response.ErrorAuthFailed, out, err
+	}
+
+	// check password
+	if !crypto.MatchPassword(userBase.UserPassword, in.UserPassword, userBase.UserSalt) {
+		return response.ErrorAuthFailed, out, fmt.Errorf("Password does not match")
+	}
+
+	// check two factor authentication
+
+	// update passworrd time
+	go s.r.LoginUserBase(ctx, database.LoginUserBaseParams{
+		UserLoginIp:  sql.NullString{String: "127.0.0.1", Valid: true},
+		UserAccount:  in.UserAccount,
+		UserPassword: in.UserPassword,
+	})
+
+	// Create UUID user
+	subToken := utils.GenerateCliTokenUUID(int(userBase.UserID))
+	fmt.Println("SubToken is ", subToken)
+	// Get user info table
+	userInfo, err := s.r.GetUserByAccount(ctx, uint64(userBase.UserID))
+	if err != nil {
+		return response.ErrorAuthFailed, out, err
+	}
+
+	// convert to json
+	userInfoJSON, err := json.Marshal(userInfo)
+	if err != nil {
+		return response.ErrorAuthFailed, out, err
+	}
+
+	// give userrInfoJSON into Redis with SubToken
+	if err := global.Rdb.Set(ctx, subToken, userInfoJSON, time.Duration(consts.TIME_OTP_REGISTER)*time.Minute).Err(); err != nil {
+		return response.ErrorAuthFailed, out, err
+	}
+
+	// create token
+	out.Token, err = auth.CreateToken(subToken)
+	out.Message = "Login Sucess"
+	if err != nil {
+		return response.ErrorAuthFailed, out, err
+	}
+	return 200, out, nil
 }
 
 // Register implements service.IUserLogin.

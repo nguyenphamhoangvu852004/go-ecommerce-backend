@@ -1,5 +1,12 @@
 basePath: /api/v1
 definitions:
+  dto.LoginUserInput:
+    properties:
+      userAccount:
+        type: string
+      userPassword:
+        type: string
+    type: object
   dto.RegisterInput:
     properties:
       verifyKey:
@@ -12,6 +19,15 @@ definitions:
     - verifyKey
     - verifyPurpose
     - verifyType
+    type: object
+  dto.SetupTwoFactorAuthInput:
+    properties:
+      twoFactorAuthType:
+        type: string
+      twoFactorEmail:
+        type: string
+      userId:
+        type: integer
     type: object
   dto.UpdateUserPasswordInput:
     properties:
@@ -60,6 +76,32 @@ info:
   title: API Documentation Go Ecommerce Backend SHOPDEVGO
   version: "1.0"
 paths:
+  /auth/login:
+    post:
+      consumes:
+      - application/json
+      description: User Login
+      parameters:
+      - description: payload
+        in: body
+        name: payload
+        required: true
+        schema:
+          $ref: '#/definitions/dto.LoginUserInput'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.ResponseData'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/response.ErrorResponseData'
+      summary: User Login
+      tags:
+      - account management
   /auth/register:
     post:
       consumes:
@@ -86,6 +128,37 @@ paths:
       summary: User Register
       tags:
       - account management
+  /auth/two_factor/setup:
+    post:
+      consumes:
+      - application/json
+      description: Setup two factor  authentication
+      parameters:
+      - description: Authorization token
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: payload
+        in: body
+        name: payload
+        required: true
+        schema:
+          $ref: '#/definitions/dto.SetupTwoFactorAuthInput'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.ResponseData'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/response.ErrorResponseData'
+      summary: Setup two factor  authentication
+      tags:
+      - account 2fa
   /auth/update_password_register:
     post:
       consumes:

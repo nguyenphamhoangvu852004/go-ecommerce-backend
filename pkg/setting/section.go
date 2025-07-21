@@ -10,12 +10,14 @@ type Config struct {
 	Cloudinary Cloudinary `mapstructure:"cloudinary"`
 	Admin      Admin      `mapstructure:"admin"`
 }
+
 type Admin struct {
 	Email       string `mapstructure:"email"`
 	Password    string `mapstructure:"password"`
 	PhoneNumber string `mapstructure:"phoneNumber"`
 	Username    string `mapstructure:"username"`
 }
+
 type Cloudinary struct {
 	CloudName string `mapstructure:"cloud_name"`
 	ApiKey    string `mapstructure:"api_key"`
@@ -25,16 +27,16 @@ type Cloudinary struct {
 type Cors struct {
 	Url string `mapstructure:"url"`
 }
+
 type Jwt struct {
-	AccessTokenSecret        string `mapstructure:"accessSecret"`
-	AccessTokenExpiriedTime  int    `mapstructure:"accessSecretExpiriedTime"`
-	RefreshTokenSecret       string `mapstructure:"refreshSecret"`
-	RefreshTokenExpiriedTime int    `mapstructure:"refreshSecretExpiriedTime"`
+	TokenHourLifeSpan        int    `mapstructure:"tokenHourLifeSpan"`
+	AccessSecret             string `mapstructure:"accessSecret"`
+	AccessSecretExpiriedTime string `mapstructure:"accessSecretExpiriedTime"`
 }
+
 type Server struct {
-	Mode       string `mapstructure:"mode"`
-	Port       int    `mapstructure:"port"`
-	SocketPort int    `mapstructure:"socketPort"`
+	Mode string `mapstructure:"mode"`
+	Port int    `mapstructure:"port"`
 }
 
 type Redis struct {

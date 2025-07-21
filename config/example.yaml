@@ -2,10 +2,8 @@ server:
   mode: "example"
   port: 8080
   socketPort: 8081
-
 cors:
   url: "http://localhost:nnnn"
-
 mysql:
   host: "localhost"
   port: 3306
@@ -15,35 +13,31 @@ mysql:
   maxIdleConns: 3
   maxOpenConns: 5
   connMaxLifeTime: 10
-
 redis:
   host: "localhost"
   port: 6379
   password: ""
   database: 0
-
 log:
   logLevel: "debug"
   fileLogName: "./storage/logs/server.log"
-  maxSize:    500
+  maxSize: 500
   maxBackups: 3
-  maxAge:     7
-  compress:   true
-
+  maxAge: 7
+  compress: true
 jwt:
-  accessSecret: "xxx"
-  accessSecretExpiriedTime: 3600
-  refreshSecret: "xxx"
-  refreshSecretExpiriedTime: 86400
+  tokenHourLifeSpan: 1
+  accessSecret: "myaccessecrettoken2025"
+  # accessSecretExpiriedTime: 3600
 
+  accessSecretExpiriedTime: 1h
+  # refreshSecret: "myrefreshtokensecret2025"
 cloudinary:
   cloud_name: "xxx"
   api_key: "xxx"
   api_secret: "xxx"
-
 admin:
   email: "xxx"
   username: "xxx"
   phoneNumber: "xxx"
   password: "xxx"
-

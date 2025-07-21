@@ -1,11 +1,8 @@
 server:
   mode: "dev"
   port: 8001
-  # socketPort: 8081
-
 cors:
   url: "http://localhost:5173"
-
 mysql:
   # host: "mysql-container-go"
   # port: 3306
@@ -17,7 +14,6 @@ mysql:
   maxIdleConns: 3
   maxOpenConns: 5
   connMaxLifeTime: 10
-
 redis:
   # host: "redis-container-go"
   # port: 6379
@@ -25,7 +21,6 @@ redis:
   port: 6300
   password: ""
   database: 0
-
 log:
   logLevel: "debug"
   fileLogName: "./storage/logs/server.log"
@@ -33,18 +28,14 @@ log:
   maxBackups: 3
   maxAge: 7
   compress: true
-
 jwt:
+  tokenHourLifeSpan: 1
   accessSecret: "myaccessecrettoken2025"
-  accessSecretExpiriedTime: 3600
-  refreshSecret: "myrefreshtokensecret2025"
-  refreshSecretExpiriedTime: 86400
-
+  accessSecretExpiriedTime: "1h"
 cloudinary:
   cloud_name: "dmsnw2qpd"
   api_key: "214187186256291"
   api_secret: "13ew1sxffolXvVYkaGleJcAd4AY"
-
 admin:
   email: "toilaadmin@gmail.com"
   username: "toilaadmin"

@@ -7,10 +7,16 @@ import (
 
 type (
 	IUserLogin interface {
-		Login(ctx context.Context) error
+		Login(ctx context.Context, in *dto.LoginUserInput) (code int, out dto.LoginUserOutput, err error)
 		Register(ctx context.Context, in *dto.RegisterInput) (int, error)
 		VerifyOTP(ctx context.Context, in *dto.VerifyInput) (dto.VerifyOutput, error)
 		UpdatePasswordRegister(ctx context.Context, token string, password string) (userId int, err error)
+		//check
+		IsTwoFactorEnabled(ctx context.Context, userId int) (code int, rs bool, err error)
+		//setup authentication
+		SetupTwoFactorAuth(ctx context.Context, in *dto.SetupTwoFactorAuthInput) (code int, err error)
+		//VerifyTwoFactorAuth
+		VerifyTwoFactorAuth(ctx context.Context, in *dto.TwoFactorVerifyInput) (code int, err error)
 	}
 	IUserInfo interface {
 		GetUserInfoByUserID(ctx context.Context) error
