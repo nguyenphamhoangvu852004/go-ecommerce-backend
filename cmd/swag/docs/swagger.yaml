@@ -20,6 +20,15 @@ definitions:
     - verifyPurpose
     - verifyType
     type: object
+  dto.SetupTwoFactorAuthInput:
+    properties:
+      twoFactorAuthType:
+        type: string
+      twoFactorEmail:
+        type: string
+      userId:
+        type: integer
+    type: object
   dto.UpdateUserPasswordInput:
     properties:
       userPassword:
@@ -119,6 +128,37 @@ paths:
       summary: User Register
       tags:
       - account management
+  /auth/two_factor/setup:
+    post:
+      consumes:
+      - application/json
+      description: Setup two factor  authentication
+      parameters:
+      - description: Authorization token
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: payload
+        in: body
+        name: payload
+        required: true
+        schema:
+          $ref: '#/definitions/dto.SetupTwoFactorAuthInput'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.ResponseData'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/response.ErrorResponseData'
+      summary: Setup two factor  authentication
+      tags:
+      - account 2fa
   /auth/update_password_register:
     post:
       consumes:

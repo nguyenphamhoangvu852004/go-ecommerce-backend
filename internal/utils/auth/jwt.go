@@ -58,3 +58,31 @@ func CreateToken(uuidToken string) (string, error) {
 		},
 	)
 }
+
+func ParseJwtToken(token string) (*PayloadClaims, error) {
+	claims := &PayloadClaims{}
+	tokenClaims, err := jwt.ParseWithClaims(token, claims, func(token *jwt.Token) (interface{}, error) {
+		return []byte(global.Config.Jwt.AccessSecret), nil
+	})
+
+	if err != nil {
+		return nil, err
+	}
+
+	if !tokenClaims.Valid {
+		return nil, errors.New("invalid token")
+	}
+
+	return claims, nil
+}
+
+func VerifyToken(token string) (*PayloadClaims, error) {
+	claims, err := ParseJwtToken(token)
+	if err != nil {
+		return nil, err
+	}
+	if err = claims.Valid(); err != nil {
+		return nil, err
+	}
+	return claims, nil
+}

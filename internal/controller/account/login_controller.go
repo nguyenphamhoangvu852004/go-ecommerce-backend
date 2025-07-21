@@ -10,7 +10,7 @@ import (
 	"go.uber.org/zap"
 )
 
-var Login = &cUserLogin{}
+var Login = new(cUserLogin)
 
 type cUserLogin struct{}
 

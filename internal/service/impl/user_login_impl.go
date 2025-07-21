@@ -36,7 +36,31 @@ func (s *sUserLogin) IsTwoFactorEnabled(ctx context.Context, userId int) (code i
 
 // SetupTwoFactorAuth implements service.IUserLogin.
 func (s *sUserLogin) SetupTwoFactorAuth(ctx context.Context, in *dto.SetupTwoFactorAuthInput) (code int, err error) {
-	panic("unimplemented")
+
+	// 1. kiểm tra xem nó có bật tính năng lên chưa -> rồi thì return luôn
+	isTrue, err := s.r.IsTwoFactorEnabled(ctx, int32(in.UserId))
+	if err != nil {
+		return response.ErrorCodeTwoFactorAuthenSetup, err
+	}
+	if isTrue > 0 {
+		return response.ErrorCodeTwoFactorAuthenSetup, fmt.Errorf("Two factor already enabled")
+	}
+
+	// 2. Enable nó lên
+	error := s.r.EnableTwoFactorTypeEmail(ctx, database.EnableTwoFactorTypeEmailParams{
+		UserID:            int32(in.UserId),
+		TwoFactorAuthType: database.PreGoAccUserTwoFactor9999TwoFactorAuthType(in.TwoFactorAuthType),
+		TwoFactorEmail:    sql.NullString{String: in.TwoFactorEmail, Valid: true},
+	})
+	if error != nil {
+		return response.ErrorCodeTwoFactorAuthenSetup, err
+	}
+
+	// 3. Gữi OTP qua in.TwoFactorEmail
+	keyHash := crypto.GetHash("2fa:" + strconv.Itoa(int(in.UserId)))
+	go global.Rdb.SetEx(ctx, keyHash, in.TwoFactorEmail, time.Duration(consts.TIME_OTP_REGISTER)*time.Minute).Err()
+
+	return response.SetupTwoFactorAuthCodeSuccess, nil
 }
 
 // Login implements service.IUserLogin.
