@@ -151,6 +151,53 @@ const docTemplate = `{
                 }
             }
         },
+        "/auth/two_factor/verify": {
+            "post": {
+                "description": "Verify two factor  authentication",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "account 2fa"
+                ],
+                "summary": "Verify two factor  authentication",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Authorization token",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "description": "payload",
+                        "name": "payload",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/dto.TwoFactorVerifyInput"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/response.ResponseData"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/response.ErrorResponseData"
+                        }
+                    }
+                }
+            }
+        },
         "/auth/update_password_register": {
             "post": {
                 "description": "UpdatePasswordRegistration",
@@ -270,6 +317,17 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "twoFactorEmail": {
+                    "type": "string"
+                },
+                "userId": {
+                    "type": "integer"
+                }
+            }
+        },
+        "dto.TwoFactorVerifyInput": {
+            "type": "object",
+            "properties": {
+                "twoFactorCode": {
                     "type": "string"
                 },
                 "userId": {

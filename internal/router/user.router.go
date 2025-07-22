@@ -30,6 +30,7 @@ func (userRouter *UserRouter) InitUserRouter(router *gin.RouterGroup) {
 	{
 		userPrivateRouter.GET("/getInfo/:id")
 		userPrivateRouter.POST("/two_factor/setup", account.TwoFactor.SetupTwoFactor)
+		userPrivateRouter.POST("/two_factor/verify", account.TwoFactor.VerifyTwoFactor)
 	}
 
 }
