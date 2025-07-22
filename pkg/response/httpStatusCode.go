@@ -28,6 +28,8 @@ const (
 	ErrorAuthFailed           = 3012
 	// Two facetor
 	ErrorCodeTwoFactorAuthenSetup = 3013
+	// Verify fail
+	ErrorCodeTwoFactorAuthenVerify = 3014
 )
 
 var msgSuccessMap = map[int]string{
@@ -43,18 +45,19 @@ var msgSuccessMap = map[int]string{
 }
 
 var msgErrorMap = map[int]string{
-	ErrorSuccessCode:              "Failed",
-	ErrorNotFoundCode:             "Data not found",
-	ErrorParameterInvalidCode:     "Parameter invalid",
-	ErrorUnauthorizedCode:         "Unauthorized",
-	ErrorInternalServerCode:       "Internal server error",
-	ErrorProcessUseCaseCode:       "Error process use case",
-	ErrorNotExistCode:             "Data does not exist",
-	ErrorInValidOTP:               "Invalid OTP",
-	ErrorSendEmailOTPCode:         "Error sending email OTP",
-	ErrorExistData:                "Data already exists",
-	ErrorOTPNotExists:             "OTP not exists",
-	ErrorOTPNotMatch:              "OTP not match",
-	ErrorAuthFailed:               "Authentication Failed",
-	ErrorCodeTwoFactorAuthenSetup: "Error code two factor authen setup",
+	ErrorSuccessCode:               "Failed",
+	ErrorNotFoundCode:              "Data not found",
+	ErrorParameterInvalidCode:      "Parameter invalid",
+	ErrorUnauthorizedCode:          "Unauthorized",
+	ErrorInternalServerCode:        "Internal server error",
+	ErrorProcessUseCaseCode:        "Error process use case",
+	ErrorNotExistCode:              "Data does not exist",
+	ErrorInValidOTP:                "Invalid OTP",
+	ErrorSendEmailOTPCode:          "Error sending email OTP",
+	ErrorExistData:                 "Data already exists",
+	ErrorOTPNotExists:              "OTP not exists",
+	ErrorOTPNotMatch:               "OTP not match",
+	ErrorAuthFailed:                "Authentication Failed",
+	ErrorCodeTwoFactorAuthenSetup:  "Error code two factor authen setup",
+	ErrorCodeTwoFactorAuthenVerify: "Error code two factor authen verify",
 }
