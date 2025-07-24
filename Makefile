@@ -4,8 +4,14 @@ GOOSE_MIGRATION_DIR = sql/schema
 
 APP_NAME = go-ecommerce-backend-api
 
-dev:
+dev-start:
+	docker start mysql-container
+	docker start redis-container
 	go run ./cmd/server/
+
+dev-stop:
+	docker stop mysql-container
+	docker stop redis-container
 
 docker_build:
 	docker compose up -d --build
@@ -32,13 +38,12 @@ sqlgen:
 up_by_one:
 	powershell -Command "$$env:GOOSE_DRIVER='$(GOOSE_DRIVER)'; $$env:GOOSE_DBSTRING='$(GOOSE_DBSTRING)'; goose -dir=$(GOOSE_MIGRATION_DIR) up-by-one"
 
-#create new migration
 create_migration:
 	powershell -Command "goose -dir=$(GOOSE_MIGRATION_DIR) create $(name) sql" 
 
 swag:
 	swag init -g ./cmd/server/main.go -o ./cmd/swag/docs
 
-.PHONY: dev docker_build docker_down docker docker_up upgoose downgoose resetgoose sqlgen swag
+.PHONY: dev-start dev-stop docker_build docker_down docker docker_up upgoose downgoose resetgoose sqlgen swag
 
 # .PHONY: air

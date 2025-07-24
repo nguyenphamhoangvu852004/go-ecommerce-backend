@@ -2,6 +2,7 @@ package initialize
 
 import (
 	"go-ecommerce-backend-api/global"
+	"go-ecommerce-backend-api/internal/middleware"
 	"go-ecommerce-backend-api/internal/router"
 
 	"github.com/gin-contrib/cors"
@@ -36,9 +37,20 @@ func InitRouter() *gin.Engine {
 	r.Use(cors.New(config))
 
 	// Routers
+	r.GET("/ping/5", middleware.NewRateLimiter().GlobalAPIRateLimiter(), func(c *gin.Context) {
+		c.JSON(200, gin.H{"message": "pong"})
+	})
+
+	r.GET("/ping/3", middleware.NewRateLimiter().PublicAPIRateLimiter(), func(c *gin.Context) {
+		c.JSON(200, gin.H{"message": "pong"})
+	})
+
+	r.GET("/ping/1", middleware.NewRateLimiter().UserPrivateAPIRateLimiter(), func(c *gin.Context) {
+		c.JSON(200, gin.H{"message": "pong"})
+	})
+
 	mainGroup := r.Group("/api/v1")
 	userRouter := router.UserRouter{}
-
 	mainGroup.GET("/checkStatus", func(c *gin.Context) { c.JSON(200, gin.H{"message": "ok lam t da thay doi nhaaa"}) }) // tracking monitor
 	{
 		// banRouter.InitBanRouter(mainGroup)
